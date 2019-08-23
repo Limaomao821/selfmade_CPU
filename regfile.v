@@ -21,6 +21,8 @@ module regfile(
         if(rst == 1'b1) begin
             rdata1 <= 32'h00000000;
             regs[0] <= 32'h00000000;
+        end else if((waddr == raddr1) && (re1 == 1'b1) && (we == 1'b1)) begin
+            rdata1 <= wdata; 
         end else if(re1 == 1'b1) begin
             rdata1 <= regs[raddr1];
         end else begin
@@ -28,11 +30,13 @@ module regfile(
         end
     end
 
-    //read data 1
+    //read data 2
     always @(*) begin
         if(rst == 1'b1) begin
             rdata2 <= 32'h00000000;
             regs[0] <= 32'h00000000;
+        end else if((waddr == raddr2) && (re2 == 1'b1) && (we == 1'b1)) begin
+            rdata2 <= wdata; 
         end else if(re2 == 1'b1) begin
             rdata2 <= regs[raddr1];
         end else begin

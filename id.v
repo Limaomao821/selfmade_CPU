@@ -7,6 +7,15 @@ module id(
 
     input rst,
 
+    //to solve data conflict between exe and decode
+    input wire[31:0]        ex_wdata_i,
+    input wire[4:0]         ex_wd_i,
+    input wire              ex_wreg_i,
+    //to solve data conflit between mem and decode
+    input wire[31:0]        mem_wdata_i,
+    input wire[4:0]         mem_wd_i,
+    input wire              mem_wreg_i,
+
     output reg[7:0]         aluop_o,
     //output reg[2:0]         alusel_o,
     output reg[31:0]        reg1_o,
@@ -60,6 +69,10 @@ module id(
     always @ (*) begin
         if(rst == 1'b1) begin
             reg1_o  <= 32'h00000000;
+        end else if((reg1_read_o == 1'b1) && (reg1_addr_o == ex_wd_i) && (ex_wreg_i == 1'b1)) begin
+            reg1_o  <= ex_wdata_i;
+        end else if((reg1_read_o == 1'b1) && (reg1_addr_o == mem_wd_i) && (mem_wreg_i == 1'b1)) begin
+            reg1_o  <= mem_wdata_i;
         end else if(reg1_read_o == 1'b1) begin
             reg1_o  <= reg1_data_i;
         end else begin
@@ -70,6 +83,10 @@ module id(
     always @ (*) begin
         if(rst == 1'b1) begin
             reg2_o  <= 32'h00000000;
+        end else if((reg2_read_o == 1'b1) && (reg2_addr_o == ex_wd_i) && (ex_wreg_i == 1'b1)) begin
+            reg2_o  <= ex_wdata_i;
+        end else if((reg2_read_o == 1'b1) && (reg2_addr_o == mem_wd_i) && (mem_wreg_i == 1'b1)) begin
+            reg2_o  <= mem_wdata_i;
         end else if(reg2_read_o == 1'b0) begin
             reg2_o  <= imm;
         end else if(reg2_read_o == 1'b1) begin
