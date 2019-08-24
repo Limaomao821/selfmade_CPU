@@ -47,7 +47,9 @@ module regfile(
     //write data
     always @(posedge clk) begin
         if(rst == 1'b0) begin
-            if((we == 1'b1) && (waddr != 5'b00000)) begin
+            if((we == 1'b1) && (waddr == 5'b00000)) begin
+                regs[waddr] <= 5'b00000;
+            else if((we == 1'b1) && (waddr != 5'b00000)) begin
                 regs[waddr] <= wdata;
             end
         end
