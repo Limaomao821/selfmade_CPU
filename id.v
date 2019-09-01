@@ -30,9 +30,9 @@ module id(
 );
     wire[5:0]   opcode      = inst_i[31:26];
     reg[32:0]   imm         = 32'h00000000;
-    reg[4:0]    shamt       = inst_i[10:6];
-    reg[5:0]    funct       = inst_i[5:0];   
-    reg[25:0]   jump_addr   = inst_i[25:0];
+    wire[4:0]   shamt       = inst_i[10:6];
+    wire[5:0]   funct       = inst_i[5:0];   
+    wire[25:0]  jump_addr   = inst_i[25:0]; 
 
     always @ (*) begin
         if(rst == 1'b1) begin
@@ -133,9 +133,9 @@ module id(
                         end
                         default: begin
                         end
-
-                //the next four cases shares some same codes
+                    endcase
                 end
+                //the next four cases shares some same codes
                 6'b001100: begin            //andi
                     aluop_o     <= 8'b01011001;
                     wd_o        <= inst_i[20:16];

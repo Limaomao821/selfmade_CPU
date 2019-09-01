@@ -49,7 +49,7 @@ module regfile(
         if(rst == 1'b0) begin
             if((we == 1'b1) && (waddr == 5'b00000)) begin
                 regs[waddr] <= 5'b00000;
-            else if((we == 1'b1) && (waddr != 5'b00000)) begin
+            end else if((we == 1'b1) && (waddr != 5'b00000)) begin
                 regs[waddr] <= wdata;
             end
         end
