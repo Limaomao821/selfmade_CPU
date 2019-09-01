@@ -17,6 +17,7 @@ module id(
     input wire              mem_wreg_i,
 
     output reg[7:0]         aluop_o,
+    //I don't understand why we need alusel_o, so I just don't use it in my code
     //output reg[2:0]         alusel_o,
     output reg[31:0]        reg1_o,
     output reg[31:0]        reg2_o,
@@ -28,8 +29,12 @@ module id(
     output reg[4:0]         reg1_addr_o,
     output reg              reg1_read_o
 );
-    wire[5:0]   opcode      = inst_i[31:26];
     reg[32:0]   imm         = 32'h00000000;
+    
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //need to refer to verilog syntax book to find out why 
+    //the four variables below can't be declared as reg
+    wire[5:0]   opcode      = inst_i[31:26];
     wire[4:0]   shamt       = inst_i[10:6];
     wire[5:0]   funct       = inst_i[5:0];   
     wire[25:0]  jump_addr   = inst_i[25:0]; 
@@ -58,7 +63,6 @@ module id(
             case(opcode)
                 6'b000000: begin
                     case(funct)
-
                         //the next four cases share some same codes
                         6'b100100: begin    //and 
                            aluop_o      <= 8'b00100100;
@@ -86,7 +90,7 @@ module id(
                         end
 
                         //the next three cases share some same codes
-                        6'b000000: begin    //nop, ssnop and sll
+                        6'b000000: begin    //sll, nop, ssnop
                             aluop_o     <= 8'b01111100;
                             imm[4:0]    <= shamt;
                             wreg_o      <= 1'b1;
@@ -107,26 +111,26 @@ module id(
                         //the next three cases share some same code
                         end
                         6'b000100: begin    //sllv
-                            aluop_o     <= 8'b00000100;
+                            aluop_o     <= 8'b01111100;
                             wreg_o      <= 1'b1;
                             reg1_read_o <= 1'b1;
                             reg2_read_o <= 1'b1;
                         end
                         6'b000110: begin    //srlv
-                            aluop_o     <= 8'b00000110;
+                            aluop_o     <= 8'b00000010;
                             wreg_o      <= 1'b1;
                             reg1_read_o <= 1'b1;
                             reg2_read_o <= 1'b1;
                         end
                         6'b000111: begin    //srav
-                            aluop_o     <= 8'b00000111;
+                            aluop_o     <= 8'b00000011;
                             wreg_o      <= 1'b1;
                             reg1_read_o <= 1'b1;
                             reg2_read_o <= 1'b1;
                         end
 
                         6'b001111: begin    //sync
-                            aluop_o     <= 8'b00000000;
+                            aluop_o     <= 8'b01111100;
                             wreg_o      <= 1'b0;
                             reg1_read_o <= 1'b0;
                             reg2_read_o <= 1'b0;
@@ -137,7 +141,7 @@ module id(
                 end
                 //the next four cases shares some same codes
                 6'b001100: begin            //andi
-                    aluop_o     <= 8'b01011001;
+                    aluop_o     <= 8'b00100100;
                     wd_o        <= inst_i[20:16];
                     wreg_o      <= 1'b1;
                     imm[15:0]   <= inst_i[15:0];
@@ -145,7 +149,7 @@ module id(
                     reg2_read_o <= 1'b0;
                 end
                 6'b001110: begin            //xori
-                    aluop_o     <= 8'b01011011;
+                    aluop_o     <= 8'b00100110;
                     wd_o        <= inst_i[20:16];
                     wreg_o      <= 1'b1;
                     imm[15:0]   <= inst_i[15:0];
@@ -161,15 +165,16 @@ module id(
                     imm[15:0]   <= inst_i[15:0];
                 end
                 6'b001111: begin            //lui
-                    aluop_o     <= 8'b01011100;
+                    aluop_o     <= 8'b00100101;
                     wreg_o      <= 1'b1;
                     wd_o        <= inst_i[20:16];
                     reg1_read_o <= 1'b1;
                     reg2_read_o <= 1'b0;
-                    imm[15:0]   <= inst_i[15:0];
+                    imm[31:16]   <= inst_i[15:0];
                 end
                 6'b110011: begin            //pref
-                    aluop_o     <= 8'b00000000;
+                    aluop_o     <= 8'b01111100;
+                    wd_o        <= 5'b00000;
                     wreg_o      <= 1'b0;
                     reg1_read_o <= 1'b0;
                     reg2_read_o <= 1'b0;

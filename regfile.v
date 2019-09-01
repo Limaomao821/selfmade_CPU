@@ -1,5 +1,5 @@
 module regfile(
-    input wire              re1,
+    input wire              re1,    
     input wire[4:0]         raddr1,
     input wire              re2,
     input wire[4:0]         raddr2,
