@@ -105,7 +105,7 @@ module regfile(
         end else if((waddr == raddr2) && (re2 == 1'b1) && (we == 1'b1)) begin
             rdata2 <= wdata; 
         end else if(re2 == 1'b1) begin
-            rdata2 <= regs[raddr1];
+            rdata2 <= regs[raddr2];
         end else begin
             rdata2 <= 32'h00000000;
         end
