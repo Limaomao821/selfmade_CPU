@@ -120,7 +120,7 @@ module id(
                             aluop_o     <= 8'b00000010;
                             wreg_o      <= 1'b1;
                             reg1_read_o <= 1'b1;
-                            reg2_read_o <= 1'b1;
+                            reg2_read_o <= 1'b1;    
                         end
                         6'b000111: begin    //srav
                             aluop_o     <= 8'b00000011;
@@ -168,8 +168,8 @@ module id(
                     aluop_o     <= 8'b00100101;
                     wreg_o      <= 1'b1;
                     wd_o        <= inst_i[20:16];
-                    reg1_read_o <= 1'b1;
-                    reg2_read_o <= 1'b0;
+                    reg1_read_o  <= 1'b1;
+                    reg2_read_o  <= 1'b0;
                     imm[31:16]   <= inst_i[15:0];
                 end
                 6'b110011: begin            //pref
