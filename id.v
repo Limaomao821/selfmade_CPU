@@ -135,6 +135,37 @@ module id(
                             reg1_read_o <= 1'b0;
                             reg2_read_o <= 1'b0;
                         end
+
+                        6'b001011: begin    //movn
+                            aluop       <= 8'b00001011;
+                            wreg_o      <= 1'b1;
+                            reg1_read_o <= 1'b1;
+                            reg2_read_o <= 1'b1;
+                        end
+
+                        6'b001010:begin     //movz
+                            aluop       <= 8'b00001011;
+                            wreg_o      <= 1'b1;
+                            reg1_read_o <= 1'b1;
+                            reg2_read_o <= 1'b1;                         
+                        end 
+                        
+                        6'b010000: begin    //mfhi
+                            aluop       <= 8'b00010000;
+                            wreg_o      <= 1'b1;
+                        end
+                        6'b010010: begin    //mflo
+                            aluop       <= 8'b00010010;
+                            wreg_o      <= 1'b1;
+                        end
+                        6'b010001: begin    //mthi
+                            aluop       <= 8'b00010001;
+                            reg1_read_o <= 1'b1;                            
+                        end
+                        6'b010011: begin    //mtlo
+                            aluop       <= b00010011;
+                            reg1_read_o <= 1'b1;
+                        end
                         default: begin
                         end
                     endcase

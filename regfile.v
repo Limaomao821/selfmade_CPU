@@ -17,6 +17,7 @@ module regfile(
     reg[31:0] regs[0:31];
 
     //convenient to see into regfiles
+    //for debug purpose only
     wire[31:0] regs_0;
     wire[31:0] regs_1;
     wire[31:0] regs_2;
