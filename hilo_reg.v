@@ -1,3 +1,6 @@
+// Advantages of this kind of design
+// It could save the time of reading register hi and lo
+// Because every clock, they are already there
 module hilo_reg(
     input wire rst,
     input wire clk,

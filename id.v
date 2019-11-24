@@ -18,7 +18,9 @@ module id(
 
     output reg[7:0]         aluop_o,
     //I don't understand why we need alusel_o, so I just don't use it in my code
-    //output reg[2:0]         alusel_o,
+    //now I understand why alusel_o is needed
+    output reg[2:0]         alusel_o,
+
     output reg[31:0]        reg1_o,
     output reg[31:0]        reg2_o,
     output reg              wreg_o,
@@ -42,6 +44,7 @@ module id(
     always @ (*) begin
         if(rst == 1'b1) begin
             aluop_o         <= 8'b00000000;
+            alusel_o        <= 3'b000;
             reg1_o          <= 32'h00000000;
             reg2_o          <= 32'h00000000;
 
@@ -52,6 +55,7 @@ module id(
             reg1_read_o     <= 1'b0;
             reg1_addr_o     <= 5'b00000;
         end else begin
+            alusel_o        <= 3'b000;
             wreg_o          <= 1'b0;
             wd_o            <= inst_i[15:11];
             reg1_read_o     <= 1'b0;
@@ -69,61 +73,69 @@ module id(
                            wreg_o       <= 1'b1;
                            reg2_read_o  <= 1'b1;
                            reg1_read_o  <= 1'b1;
+                           alusel_o     <= 3'b001;
                         end
                         6'b100101: begin    //or
                             aluop_o     <= 8'b00100101;
                             wreg_o      <= 1'b1;
                             reg2_read_o <= 1'b1;
                             reg1_read_o <= 1'b1;
+                            alusel_o     <= 3'b001;
                         end
                         6'b100110: begin    //xor
                             aluop_o     <= 8'b00100110;
                             wreg_o      <= 1'b1;
                             reg2_read_o <= 1'b1;
                             reg1_read_o <= 1'b1;
+                            alusel_o     <= 3'b001;
                         end
                         6'b100111: begin    //nor
                             aluop_o     <= 8'b00100111;
                             wreg_o      <= 1'b1;
                             reg2_read_o <= 1'b1;
                             reg1_read_o <= 1'b1;
+                            alusel_o     <= 3'b001;
                         end
 
-                        //the next three cases share some same codes
                         6'b000000: begin    //sll, nop, ssnop
                             aluop_o     <= 8'b01111100;
+                            alusel_o     <= 3'b010;
                             imm[4:0]    <= shamt;
                             wreg_o      <= 1'b1;
                             reg2_read_o <= 1'b1;
                         end
                         6'b000010: begin    //srl
                             aluop_o     <= 8'b00000010;
+                            alusel_o     <= 3'b010;
                             imm[4:0]    <= shamt;
                             wreg_o      <= 1'b1;
                             reg2_read_o <= 1'b1;
                         end
                         6'b000011: begin    //sra
                             aluop_o     <= 8'b00000011;
+                            alusel_o     <= 3'b010;
                             imm[4:0]    <= shamt;
                             wreg_o      <= 1'b1;
                             reg2_read_o <= 1'b1;
-
-                        //the next three cases share some same code
                         end
+
                         6'b000100: begin    //sllv
                             aluop_o     <= 8'b01111100;
+                            alusel_o     <= 3'b010;
                             wreg_o      <= 1'b1;
                             reg1_read_o <= 1'b1;
                             reg2_read_o <= 1'b1;
                         end
                         6'b000110: begin    //srlv
                             aluop_o     <= 8'b00000010;
+                            alusel_o     <= 3'b010;
                             wreg_o      <= 1'b1;
                             reg1_read_o <= 1'b1;
                             reg2_read_o <= 1'b1;    
                         end
                         6'b000111: begin    //srav
                             aluop_o     <= 8'b00000011;
+                            alusel_o     <= 3'b010;
                             wreg_o      <= 1'b1;
                             reg1_read_o <= 1'b1;
                             reg2_read_o <= 1'b1;
@@ -138,24 +150,35 @@ module id(
 
                         6'b001011: begin    //movn
                             aluop       <= 8'b00001011;
-                            wreg_o      <= 1'b1;
+                            alusel_o    <= 3'b011;
+                            if(reg2_o != 32'h00000000) begin
+                                wreg_o      <= 1'b1; 
+                            end else begin
+                                wreg_o      <= 1'b0;
+                            end
                             reg1_read_o <= 1'b1;
                             reg2_read_o <= 1'b1;
                         end
-
                         6'b001010:begin     //movz
                             aluop       <= 8'b00001011;
+                            alusel_o    <= 3'b011;
+                            if(reg2_o == 32'h00000000) begin
+                                wreg_o      <= 1'b1; 
+                            end else begin
+                                wreg_o      <= 1'b0;
+                            end
                             wreg_o      <= 1'b1;
                             reg1_read_o <= 1'b1;
                             reg2_read_o <= 1'b1;                         
                         end 
-                        
                         6'b010000: begin    //mfhi
                             aluop       <= 8'b00010000;
+                            alusel_o    <= 3'b011;
                             wreg_o      <= 1'b1;
                         end
                         6'b010010: begin    //mflo
                             aluop       <= 8'b00010010;
+                            alusel_o    <= 3'b011;
                             wreg_o      <= 1'b1;
                         end
                         6'b010001: begin    //mthi
@@ -163,16 +186,17 @@ module id(
                             reg1_read_o <= 1'b1;                            
                         end
                         6'b010011: begin    //mtlo
-                            aluop       <= b00010011;
+                            aluop       <= 8'b00010011;
                             reg1_read_o <= 1'b1;
                         end
                         default: begin
                         end
                     endcase
                 end
-                //the next four cases shares some same codes
+
                 6'b001100: begin            //andi
                     aluop_o     <= 8'b00100100;
+                    alusel_o     <= 3'b001;
                     wd_o        <= inst_i[20:16];
                     wreg_o      <= 1'b1;
                     imm[15:0]   <= inst_i[15:0];
@@ -181,6 +205,7 @@ module id(
                 end
                 6'b001110: begin            //xori
                     aluop_o     <= 8'b00100110;
+                    alusel_o     <= 3'b001;
                     wd_o        <= inst_i[20:16];
                     wreg_o      <= 1'b1;
                     imm[15:0]   <= inst_i[15:0];
@@ -189,6 +214,7 @@ module id(
                 end
                 6'b001101: begin            //ori
                     aluop_o     <= 8'b00100101;
+                    alusel_o     <= 3'b001;
                     wreg_o      <= 1'b1;
                     wd_o        <= inst_i[20:16];
                     reg1_read_o <= 1'b1;
@@ -197,13 +223,14 @@ module id(
                 end
                 6'b001111: begin            //lui
                     aluop_o     <= 8'b00100101;
+                    alusel_o     <= 3'b001;
                     wreg_o      <= 1'b1;
                     wd_o        <= inst_i[20:16];
                     reg1_read_o  <= 1'b1;
                     reg2_read_o  <= 1'b0;
                     imm[31:16]   <= inst_i[15:0];
                 end
-                6'b110011: begin            //pref
+                6'b110011: begin            //pref, now considered as nop
                     aluop_o     <= 8'b01111100;
                     wd_o        <= 5'b00000;
                     wreg_o      <= 1'b0;
