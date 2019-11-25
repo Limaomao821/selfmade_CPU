@@ -184,7 +184,7 @@ module openmips(
         // input data
         .we(wb_whilo_i), .hi_i(wb_hi_i), .lo_i(wb_lo_i),
         // output data
-        .hi_o(HI), .lo_o(LO),
+        .hi_o(HI), .lo_o(LO)
     );
     
 endmodule

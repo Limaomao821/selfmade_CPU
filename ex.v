@@ -1,7 +1,6 @@
 module ex(
     input wire[7:0]     aluop_i,
     input wire[2:0]     alusel_i,
-    input wire[2:0]     alusel_i,
     input wire[31:0]    reg1_i,
     input wire[31:0]    reg2_i,
     input wire[4:0]     wd_i,
@@ -72,10 +71,10 @@ module ex(
         if(rst == 1'b1) begin
             HI  <= 32'h00000000;
             LO  <= 32'h00000000;
-        end else if(mem_whilo_O == 1'b1) begin
+        end else if(mem_whilo_i == 1'b1) begin
             HI  <= mem_hi_i;
             LO  <= mem_lo_i;
-        end else if(wb_whilo_o == 1'b1) begin
+        end else if(wb_whilo_i == 1'b1) begin
             HI  <= wb_hi_i;
             LO  <= wb_lo_i;
         end else begin

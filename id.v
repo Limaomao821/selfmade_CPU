@@ -149,7 +149,7 @@ module id(
                         end
 
                         6'b001011: begin    //movn
-                            aluop       <= 8'b00001011;
+                            aluop_o     <= 8'b00001011;
                             alusel_o    <= 3'b011;
                             if(reg2_o != 32'h00000000) begin
                                 wreg_o      <= 1'b1; 
@@ -160,33 +160,32 @@ module id(
                             reg2_read_o <= 1'b1;
                         end
                         6'b001010:begin     //movz
-                            aluop       <= 8'b00001011;
+                            aluop_o     <= 8'b00001011;
                             alusel_o    <= 3'b011;
                             if(reg2_o == 32'h00000000) begin
                                 wreg_o      <= 1'b1; 
                             end else begin
                                 wreg_o      <= 1'b0;
                             end
-                            wreg_o      <= 1'b1;
                             reg1_read_o <= 1'b1;
                             reg2_read_o <= 1'b1;                         
                         end 
                         6'b010000: begin    //mfhi
-                            aluop       <= 8'b00010000;
+                            aluop_o     <= 8'b00010000;
                             alusel_o    <= 3'b011;
                             wreg_o      <= 1'b1;
                         end
                         6'b010010: begin    //mflo
-                            aluop       <= 8'b00010010;
+                            aluop_o     <= 8'b00010010;
                             alusel_o    <= 3'b011;
                             wreg_o      <= 1'b1;
                         end
                         6'b010001: begin    //mthi
-                            aluop       <= 8'b00010001;
+                            aluop_o     <= 8'b00010001;
                             reg1_read_o <= 1'b1;                            
                         end
                         6'b010011: begin    //mtlo
-                            aluop       <= 8'b00010011;
+                            aluop_o     <= 8'b00010011;
                             reg1_read_o <= 1'b1;
                         end
                         default: begin
