@@ -29,6 +29,7 @@ module ex(
     reg[31:0]   logicout;
     reg[31:0]   shiftres;
     reg[31:0]   moveres;
+    reg[31:0]   arithmaticres;
     reg[31:0]   HI;
     reg[31:0]   LO;
 
@@ -66,7 +67,7 @@ module ex(
         endcase
     end
 
-//  make sure HI, LO get newest value
+    //  make sure HI, LO get newest value
     always @(*) begin
         if(rst == 1'b1) begin
             HI  <= 32'h00000000;
@@ -82,7 +83,6 @@ module ex(
             LO  <= lo_i;
         end
     end
-
     always @(*) begin
         case(aluop_i)
         8'b00001011: begin      //movn
@@ -127,6 +127,16 @@ module ex(
             end
             endcase
         end
+    end
+
+    always @(*) begin
+        case(aluop_i)
+            8'b00100000: begin  //add
+                
+            end
+            default: begin                
+            end
+        endcase
     end
 
     always @(*) begin

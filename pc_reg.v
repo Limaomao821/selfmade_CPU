@@ -11,7 +11,6 @@ module pc_reg(
 //            pc <= 32'h00000000;
 //            ce <= 1'b0;
 //        end else begin
-//            //currently, pc only increases here
 //            pc <= pc + 4'h4;
 //            ce <= 1'b1;
 //        end
