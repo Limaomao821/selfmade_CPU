@@ -325,7 +325,7 @@ module id(
                     imm[15:0]   <= {{16{inst_i[15]}}, inst_i[15:0]};
                 end
                 6'b001010: begin    //slti
-                    aluop_o     <= 8'b01010111;
+                    aluop_o     <= 8'b00101010;
                     alusel_o    <= `EXE_RES_ARITHMETIC;
                     reg1_read_o <= 1'b1;
                     wd_o        <= inst_i[20:16];
@@ -333,7 +333,7 @@ module id(
                     imm[15:0]   <= {{16{inst_i[15]}}, inst_i[15:0]};
                 end
                 6'b001011: begin    //sltiu
-                    aluop_o     <= 8'b01011000;
+                    aluop_o     <= 8'b00101011;
                     alusel_o    <= `EXE_RES_ARITHMETIC;
                     reg1_read_o <= 1'b1;
                     wreg_o      <= 1'b1;

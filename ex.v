@@ -129,6 +129,22 @@ module ex(
         end
     end
 
+    // for arithmatic calculation
+    wire ov_sum;
+    wire[31:0]  reg2_i_mux;
+    wire[31:0]  result_sum;
+
+    assign reg2_i_mux = (aluop_i==8'b00100010||
+                         aluop_i==8'b00100011||
+                         aluop_i==8'b00101010)?
+                        (~reg2_i+1):reg2_i;
+
+    assign result_sum = reg1_i + reg2_i_mux;
+
+    assign ov_sum = ((!reg1_i[31]&&!reg2_i[31]&&result_sum[31])||
+                    (reg1_i[31]&&reg2_i[31]&&!result_sum[31]));
+
+    
     always @(*) begin
         case(aluop_i)
             8'b00100000: begin  //add
