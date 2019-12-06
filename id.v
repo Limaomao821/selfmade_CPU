@@ -1,3 +1,4 @@
+`include "defines.v"
 module id(
     input wire[31:0]        pc_i,
     input wire[31:0]        inst_i,
@@ -236,7 +237,7 @@ module id(
                             wreg_o      <= 1'b1;
                         end
 
-                        6’b011000: begin    //mult
+                        6'b011000: begin    //mult
                             aluop_o     <= 8'b00011000;
                             // may not need aluse_o
                             // of course do not need alusel_o
@@ -356,7 +357,7 @@ module id(
                         end
                         6'b000010:  begin   //mul
                             aluop_o     <= 8'b10101001;
-                            alusel_o    <= `EXE_RES_ARITHMETIC;
+                            alusel_o    <= `EXE_RES_MUL;
                             wreg_o      <= 1'b1;
                             reg1_read_o <= 1'b1;
                             reg2_read_o <= 1'b1;

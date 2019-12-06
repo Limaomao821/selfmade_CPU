@@ -1,3 +1,4 @@
+`include "defines.v"
 module ex(
     input wire[7:0]     aluop_i,
     input wire[2:0]     alusel_i,
@@ -120,6 +121,11 @@ module ex(
                 lo_o    <= reg1_i;
                 hi_o    <= HI;
             end
+            8'b00011000, 8'b00011001: begin  //mult, multu
+                whilo_o <= 1'b1;
+                lo_o    <= mulres[31:0];
+                hi_o    <= mulres[63:32];
+            end
             default: begin
                 whilo_o <= 1'b0;
                 hi_o    <= 32'h00000000;
@@ -129,7 +135,7 @@ module ex(
         end
     end
 
-    // for arithmatic calculation
+    // for arithmatic calculation////////////////////////////////////////////////////////////
     wire ov_sum;
     wire[31:0]  reg2_i_mux;
     wire[31:0]  result_sum;
@@ -143,6 +149,7 @@ module ex(
 
     assign result_sum = reg1_i + reg2_i_mux;
 
+    //detect overflow of inst: add, sub, addi
     assign ov_sum = ((!reg1_i[31]&&!reg2_i[31]&&result_sum[31])||
                     (reg1_i[31]&&reg2_i[31]&&!result_sum[31]));
 
@@ -153,7 +160,6 @@ module ex(
                             (reg1_i<reg2_i);
     
     assign reg1_i_not   = ~reg1_i;
-    
     always @(*) begin
         case(aluop_i)
             8'b00100000, 8'b01010101, 8'b00100001, 8'b01010110: begin  //add, addi, addu, addiu
@@ -166,7 +172,7 @@ module ex(
                 arithmaticres <=    reg1_lt_reg2;
             end
             8'b10110000: begin
-                arithmeticres <=    reg1_i[31] ? 0 : reg1_i[30] ? 1 : reg1_i[29] ? 2 :
+                arithmaticres <=    reg1_i[31] ? 0 : reg1_i[30] ? 1 : reg1_i[29] ? 2 :
                                     reg1_i[28] ? 3 : reg1_i[27] ? 4 : reg1_i[26] ? 5 :
                                     reg1_i[25] ? 6 : reg1_i[24] ? 7 : reg1_i[23] ? 8 : 
                                     reg1_i[22] ? 9 : reg1_i[21] ? 10 : reg1_i[20] ? 11 :
@@ -179,7 +185,7 @@ module ex(
                                     reg1_i[1] ? 30 : reg1_i[0] ? 31 : 32 ;
             end
             8'b10110001: begin
-                arithmeticres <=    (reg1_i_not[31] ? 0 : reg1_i_not[30] ? 1 : reg1_i_not[29] ? 2 :
+                arithmaticres <=    (reg1_i_not[31] ? 0 : reg1_i_not[30] ? 1 : reg1_i_not[29] ? 2 :
                                     reg1_i_not[28] ? 3 : reg1_i_not[27] ? 4 : reg1_i_not[26] ? 5 :
                                     reg1_i_not[25] ? 6 : reg1_i_not[24] ? 7 : reg1_i_not[23] ? 8 : 
                                     reg1_i_not[22] ? 9 : reg1_i_not[21] ? 10 : reg1_i_not[20] ? 11 :
@@ -196,29 +202,60 @@ module ex(
             end
         endcase
     end
-
+    wire[31:0]  opdata1_mult;
+    wire[31:0]  opdata2_mult;
+    wire[63:0]  hilo_temp;
+    reg[63:0]   mulres;
+    assign opdata1_mul  =   (((aluop_i==8'b10101001)||(aluop_i==8'b00011000))&&
+                            reg1_i[31]==1'b1)?
+                            (~reg1_i+1) : reg1_i;
+    assign opdata2_mul  =   (((aluop_i==8'b10101001)||(aluop_i==8'b00011000))&&
+                            reg2_i[31]==1'b1)?
+                            (~reg2_i+1) : reg2_i;
+    assign hilo_temp    =   opdata1_mult * opdata2_mult;
     always @(*) begin
         if(rst == 1'b1) begin
+            mulres  <=  64'h0000000000000000;
+        end else begin
+            if(aluop_i==8'b10101001 || aluop_i==8'b00011000) begin
+                if(reg1_i[31]^reg2_i[31]==0) begin
+                    mulres  <= ~hilo_temp+1;
+                end else begin
+                    mulres  <= hilo_temp;
+                end
+            end else begin
+                mulres  <= hilo_temp;
+            end 
+        end
+    end
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    always @(*) begin
+        wd_o    <= wd_i;
+        if((aluop_i==8'b00100000||aluop_i==8'b00100010||aluop_i==8'b01010101)&&(ov_sum==1'b1)) begin
             wreg_o  <= 1'b0;
-            wdata_o <= 32'h00000000;
-            wd_o    <= 5'b00000;
         end else begin
             wreg_o  <= wreg_i;
-            wd_o    <= wd_i;
-            case(alusel_i)
-            3'b001: begin
-                wdata_o <= logicout;
-            end
-            3'b010: begin
-                wdata_o <= shiftres;
-            end
-            3'b011: begin
-                wdata_o <= moveres;
-            end
-            default: begin
-                wdata_o <= 32'h00000000;
-            end
-            endcase
         end
+        case(alusel_i)
+        3'b001: begin
+            wdata_o <=  logicout;
+        end
+        3'b010: begin
+            wdata_o <=  shiftres;
+        end
+        3'b011: begin
+            wdata_o <=  moveres;
+        end
+        `EXE_RES_ARITHMETIC: begin
+            wdata_o <=  arithmaticres;
+        end
+        `EXE_RES_MUL: begin
+            wdata_o <=  mulres[31:0];
+        end
+        default: begin
+            wdata_o <= 32'h00000000;
+        end
+        endcase
     end
 endmodule
