@@ -206,11 +206,11 @@ module ex(
     wire[31:0]  opdata2_mult;
     wire[63:0]  hilo_temp;
     reg[63:0]   mulres;
-    assign opdata1_mul  =   (((aluop_i==8'b10101001)||(aluop_i==8'b00011000))&&
-                            reg1_i[31]==1'b1)?
+    assign opdata1_mult =   (((aluop_i==8'b10101001)||(aluop_i==8'b00011000))&&
+                            (reg1_i[31]==1'b1))?
                             (~reg1_i+1) : reg1_i;
-    assign opdata2_mul  =   (((aluop_i==8'b10101001)||(aluop_i==8'b00011000))&&
-                            reg2_i[31]==1'b1)?
+    assign opdata2_mult =   (((aluop_i==8'b10101001)||(aluop_i==8'b00011000))&&
+                            (reg2_i[31]==1'b1))?
                             (~reg2_i+1) : reg2_i;
     assign hilo_temp    =   opdata1_mult * opdata2_mult;
     always @(*) begin
@@ -218,7 +218,7 @@ module ex(
             mulres  <=  64'h0000000000000000;
         end else begin
             if(aluop_i==8'b10101001 || aluop_i==8'b00011000) begin
-                if(reg1_i[31]^reg2_i[31]==0) begin
+                if(reg1_i[31]^reg2_i[31]==1'b1) begin
                     mulres  <= ~hilo_temp+1;
                 end else begin
                     mulres  <= hilo_temp;
@@ -231,11 +231,11 @@ module ex(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     always @(*) begin
-        wd_o    <= wd_i;
+        wd_o    <=  wd_i;
         if((aluop_i==8'b00100000||aluop_i==8'b00100010||aluop_i==8'b01010101)&&(ov_sum==1'b1)) begin
-            wreg_o  <= 1'b0;
+            wreg_o  <=  1'b0;
         end else begin
-            wreg_o  <= wreg_i;
+            wreg_o  <=  wreg_i;
         end
         case(alusel_i)
         3'b001: begin
@@ -254,7 +254,7 @@ module ex(
             wdata_o <=  mulres[31:0];
         end
         default: begin
-            wdata_o <= 32'h00000000;
+            wdata_o <=  32'h00000000;
         end
         endcase
     end
