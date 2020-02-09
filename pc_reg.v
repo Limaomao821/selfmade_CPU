@@ -1,9 +1,9 @@
 module pc_reg(
-    input wire               rst,
-    input wire               clk,
+    input wire          rst,
+    input wire          clk,
 
-    output reg[31:0]         pc,
-    output reg               ce
+    output reg[31:0]    pc,
+    output reg          ce
 );
 
 //    always @ (posedge clk) begin
